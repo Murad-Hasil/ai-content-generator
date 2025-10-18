@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://ai-content-generator-mu-ten.vercel.app/
+
+# Sitemaps
+Sitemap: https://ai-content-generator-mu-ten.vercel.app/sitemap.xml

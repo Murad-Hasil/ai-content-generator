@@ -55,10 +55,14 @@ export const metadata: Metadata = {
       },
     ],
   },
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
     title: "AI Content Generator",
     description: "Create engaging blog content in seconds with AI.",
-    url: "https://your-domain.com",
+    url: "https://ai-content-generator-mu-ten.vercel.app/",
     siteName: "AI Content Generator",
     images: [
       {
@@ -78,7 +82,7 @@ export const metadata: Metadata = {
     creator: "@mbmuradhasil",
     images: ["/og-image.png"],
   },
-  metadataBase: new URL("https://your-domain.com"),
+  metadataBase: new URL("https://ai-content-generator-mu-ten.vercel.app/"),
 };
 
 export default function RootLayout({
@@ -91,20 +95,6 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-background text-foreground antialiased`}
       >
-        {/* Register service worker */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(() => console.log('Service Worker registered'))
-            .catch(err => console.error('SW registration failed:', err));
-        });
-      }
-    `,
-          }}
-        />
         {/* Theme wrapper controls dark/light mode */}
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {/* Navbar (fixed at top) */}
