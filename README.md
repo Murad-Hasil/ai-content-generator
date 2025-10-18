@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Content Generator
 
-## Getting Started
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-0EA5E9?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)](https://vercel.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+A simple and clean web app that helps you generate high-quality blog posts using AI.  
+Built with **Next.js**, **Tailwind CSS**, and **Google Gemini API**, the app supports both light and dark themes and can be installed as a **Progressive Web App (PWA)** for offline access.
+
+---
+
+## ⚙️ Tech Stack
+
+- **Framework:** Next.js 15 (App Router)
+- **Styling:** Tailwind CSS + shadcn/ui
+- **Animation:** Framer Motion
+- **AI Model:** Google Gemini API
+- **Deployment:** Vercel
+- **Extras:** TypeScript, PWA support
+
+---
+
+## 🚀 Features
+
+- Generate natural, high-quality content in different tones
+- Clean and mobile-friendly UI
+- Dark/light theme with system detection
+- Saved posts with Edit & Share options
+- Offline support (PWA)
+- SEO-optimized metadata and Open Graph tags
+
+---
+
+## 🧩 Folder Structure
+
 ```
+src/
+├── app/
+│ ├── api/
+│ │ └── generate/route.ts → AI generation API route
+│ ├── layout.tsx → Root layout with metadata
+│ └── page.tsx → Main homepage
+├── components/ → UI components (Navbar, Footer, etc.)
+├── lib/ → Helper functions
+public/
+├── icons/ → Favicon files
+└── og-image.png → Open Graph image
+```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 💻 Setup Instructions
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone the repository**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   git clone https://github.com/yourusername/ai-content-generator.git
+   cd ai-content-generator
+   ```
 
-## Learn More
+2. **Install dependencies**
 
-To learn more about Next.js, take a look at the following resources:
+    ```bash
+    npm install
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3.  **Add environment variables**  
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    Create a .env.local file and add:
 
-## Deploy on Vercel
+    ```bash
+    NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. **Run the development server**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    ```bash
+    npm run dev
+    ```
+5. **Build for production**
+
+    ```bash
+    npm run build && npm start
+    ```
+
+## 🌐 Deployment
+
+This project is optimized for Vercel.
+Once deployed, Lighthouse will recognize the PWA manifest and service worker automatically
+
+---
+
+## 🧠 Live Demo
+
+👉 [AI Content Generator on Vercel](https://ai-content-generator.vercel.app/)
+
+---
+
+## 📱 PWA Support  
+
+You can install the app directly from your browser:
+
+- On desktop, click **“Install App”** or **“Open in App”**
+- On mobile, tap **“Add to Home Screen”**  
+The app works offline after first load.
+
+##  👤 Author
+
+**Murad Hasil**  
+*Portfolio Website:* [Visit My Portfolio](https://portfolio-nextjs-woad-gamma.vercel.app/)
+
+---
