@@ -1,26 +1,36 @@
 // src/lib/generateContent.ts
 // ------------------------------------------------------
-// Sends topic and tone to the `/api/generate` endpoint
-// and returns the generated content.
-// Keeps fetch logic isolated from UI components.
+// Handles content generation by sending a POST request
+// to the `/api/generate` endpoint with the topic and tone.
+// Includes timeout and error handling.
 // ------------------------------------------------------
 
-export async function generateContent(topic: string, tone: string) {
+interface GenerateResponse {
+  content?: string;
+}
+
+export async function generateContent(topic: string, tone: string): Promise<string> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+
   try {
     const res = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ topic, tone }),
+      signal: controller.signal,
     });
 
+    clearTimeout(timeout);
+
     if (!res.ok) {
-      throw new Error("Failed to generate content.");
+      throw new Error(`Request failed with status ${res.status}`);
     }
 
-    const data = await res.json();
-    return data.content;
+    const data: GenerateResponse = await res.json();
+    return data.content?.trim() || "No content generated.";
   } catch (err) {
     console.error("Error generating content:", err);
-    throw err;
+    return "Sorry, something went wrong while generating content.";
   }
 }

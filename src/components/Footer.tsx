@@ -1,12 +1,17 @@
+// src/components/Footer.tsx
+// ------------------------------------------------------
+// Footer Component
+// A clean, responsive footer with a soft fade-in animation.
+// Displays copyright and developer credit.
+// ------------------------------------------------------
+
 "use client";
 
 import { motion } from "framer-motion";
 
-/**
- * Footer component
- * Simple, clean, and responsive footer that fades in on load.
- */
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <motion.footer
       initial={{ opacity: 0, y: 15 }}
@@ -15,14 +20,14 @@ export default function Footer() {
       className="border-t border-border bg-card/40 backdrop-blur-sm mt-10"
     >
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center px-4 py-6 text-sm text-muted-foreground">
-        {/* Left side - copyright */}
+        {/* Left section — copyright */}
         <p className="text-center sm:text-left">
-          © {new Date().getFullYear()}{" "}
-          <span className="font-medium text-foreground">AI Content Generator</span>. 
+          © {currentYear}{" "}
+          <span className="font-medium text-foreground">AI Content Generator</span>.{" "}
           All rights reserved.
         </p>
 
-        {/* Right side - credit */}
+        {/* Right section — credit */}
         <p className="text-center sm:text-right">
           Built by{" "}
           <a

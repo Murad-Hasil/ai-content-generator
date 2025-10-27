@@ -1,4 +1,10 @@
 // src/components/ThemeToggle.tsx
+// ------------------------------------------------------
+// Author: MB
+// Purpose: Toggle between light and dark themes using next-themes.
+// Includes smooth icon animation with framer-motion.
+// ------------------------------------------------------
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -11,23 +17,24 @@ export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Avoid hydration mismatch on first render
+  // Avoid hydration mismatch by rendering only after mount
   useEffect(() => setMounted(true), []);
   if (!mounted) return null;
 
   const isLight = theme === "light";
+  const nextTheme = isLight ? "dark" : "light";
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      aria-label={`Switch to ${isLight ? "dark" : "light"} mode`}
-      onClick={() => setTheme(isLight ? "dark" : "light")}
+      aria-label={`Switch to ${nextTheme} mode`}
+      onClick={() => setTheme(nextTheme)}
       className="relative overflow-hidden"
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
-          key={isLight ? "moon" : "sun"}
+          key={nextTheme}
           initial={{ y: -10, opacity: 0, rotate: -30 }}
           animate={{ y: 0, opacity: 1, rotate: 0 }}
           exit={{ y: 10, opacity: 0, rotate: 30 }}

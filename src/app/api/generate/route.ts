@@ -1,45 +1,78 @@
 // src/app/api/generate/route.ts
 // ------------------------------------------------------
-// API route: Generates blog content using Google Gemini.
+// Author: MB
+// Purpose: Generate blog content using Google Gemini.
 // Receives a topic and tone, builds a natural prompt,
-// and returns a plain-text blog post.
+// and returns a plain-text blog post response.
 // ------------------------------------------------------
 
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Initialize Gemini client with your environment key.
-// Always keep this key server-side only.
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY!);
+// Initialize Gemini client with a secure server-side API key.
+// Never expose this key in client-side code.
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+
+// Define expected input structure for strong typing.
+interface GenerateRequest {
+  topic: string;
+  tone: string;
+}
 
 export async function POST(req: Request) {
   try {
-    const { topic, tone } = await req.json();
-
-    if (!topic || !tone) {
+    // Validate Content-Type header (handles charset variations)
+    const contentType = req.headers.get("content-type") ?? "";
+    if (!contentType.includes("application/json")) {
       return NextResponse.json(
-        { error: "Both topic and tone are required." },
+        { success: false, error: "Invalid content type. Expected JSON." },
         { status: 400 }
       );
     }
 
-    // Use a lightweight Gemini model for faster results
+    const { topic, tone }: GenerateRequest = await req.json();
+
+    // Simple input validation
+    if (!topic?.trim() || !tone?.trim()) {
+      return NextResponse.json(
+        { success: false, error: "Both topic and tone are required." },
+        { status: 400 }
+      );
+    }
+
+    // Normalize tone for consistent prompt wording
+    const normalizedTone = tone.toLowerCase().trim();
+
+    // Initialize model once per request
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
+    // Construct a clear, human-like writing prompt
     const prompt = `
-      Write a complete blog post about "${topic}" in a ${tone} tone.
-      Make it natural, well-structured, and easy to follow.
-      Include a brief introduction, clear sections, and a short conclusion.
-    `;
+      Write a well-structured blog post about "${topic}" in a ${normalizedTone} tone.
+      The writing should feel natural, coherent, and easy to follow.
+      Include an engaging introduction, organized sections, and a short conclusion.
+    `.trim();
 
+    // Generate the content
     const result = await model.generateContent(prompt);
-    const content = result.response.text();
+    const content = result?.response?.text()?.trim();
 
-    return NextResponse.json({ content });
-  } catch (error) {
-    console.error("Error generating content:", error);
+    if (!content) {
+      return NextResponse.json(
+        { success: false, error: "No content was generated." },
+        { status: 502 }
+      );
+    }
+
+    return NextResponse.json({ success: true, content });
+  } catch (error: unknown) {
+    console.error(
+      "[/api/generate] Content generation failed:",
+      error instanceof Error ? error.message : error
+    );
+
     return NextResponse.json(
-      { error: "Failed to generate content. Please try again." },
+      { success: false, error: "Failed to generate content. Please try again later." },
       { status: 500 }
     );
   }

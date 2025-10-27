@@ -1,19 +1,17 @@
 // src/components/ContentGenerator.tsx
 // ------------------------------------------------------
-// Main content generation component
-// Handles topic and tone input, API call to generate text,
-// and local actions (copy, save, view).
+// Author: MB
+// Purpose: Main Content Generator Component
+// Lets users enter a topic, choose tone, generate content,
+// copy or save it, and reset everything.
 // ------------------------------------------------------
 
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { generateContent } from "@/lib/generateContent";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -21,139 +19,161 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Copy, Save } from "lucide-react";
+import { generateContent } from "@/lib/generateContent";
+import { useToast } from "@/components/ui/use-toast";
+import CopyButton from "@/components/ui/CopyButton";
 
 export default function ContentGenerator() {
-  // Local state
   const [topic, setTopic] = useState("");
-  const [tone, setTone] = useState("informative");
+  const [tone, setTone] = useState("");
+  const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
-  const [output, setOutput] = useState("");
+  const { toast } = useToast();
 
-  // Generate content from the API
-  const handleGenerate = async () => {
-    if (!topic.trim()) {
-      alert("Please enter a topic first.");
+  // Generate content via API
+  const handleGenerate = useCallback(async () => {
+    if (!topic.trim() || !tone.trim()) {
+      toast({
+        title: "Missing input",
+        description: "Please enter a topic and select a tone first.",
+        variant: "destructive",
+      });
       return;
     }
 
     setLoading(true);
-    setOutput("");
+    setContent(""); // clear old result
 
     try {
-      const content = await generateContent(topic, tone);
-      setOutput(content);
+      const result = await generateContent(topic, tone);
+      setContent(result);
+
+      toast({
+        title: "Done!",
+        description: "Your AI-generated content is ready.",
+      });
     } catch {
-      alert("Something went wrong while generating content.");
+      toast({
+        title: "Error",
+        description: "Could not generate content. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
-  };
+  }, [topic, tone, toast]);
 
-  // Copy generated content
-  const handleCopy = () => {
-    if (!output.trim()) return;
-    navigator.clipboard.writeText(output);
-    alert("Copied to clipboard.");
-  };
-
-  // Save post in localStorage
-  const handleSave = () => {
-    if (!output.trim()) {
-      alert("No content to save.");
+  // Save post to localStorage
+  const handleSave = useCallback(() => {
+    if (!content.trim() || !topic.trim()) {
+      toast({
+        title: "Nothing to save",
+        description: "Generate some content first.",
+        variant: "destructive",
+      });
       return;
     }
 
-    const newPost = { title: topic, content: output, tone };
-    const stored = localStorage.getItem("savedPosts");
-    const posts = stored ? JSON.parse(stored) : [];
+    try {
+      const newPost = { title: topic.trim(), content: content.trim(), tone };
+      const existing = JSON.parse(localStorage.getItem("savedPosts") || "[]");
+      localStorage.setItem("savedPosts", JSON.stringify([...existing, newPost]));
 
-    posts.unshift(newPost);
-    localStorage.setItem("savedPosts", JSON.stringify(posts));
+      toast({
+        title: "Saved",
+        description: "Added to your Saved Posts.",
+      });
+    } catch {
+      toast({
+        title: "Storage Error",
+        description: "Could not save post locally.",
+        variant: "destructive",
+      });
+    }
+  }, [content, topic, tone, toast]);
 
-    alert("Post saved successfully.");
-  };
+  // Clear form and result
+  const handleClear = useCallback(() => {
+    if (!topic && !tone && !content) {
+      toast({ description: "Nothing to clear." });
+      return;
+    }
 
+    setTopic("");
+    setTone("");
+    setContent("");
+
+    toast({
+      title: "Cleared",
+      description: "Form and content reset.",
+    });
+  }, [topic, tone, content, toast]);
+
+  // UI
   return (
-    <motion.div
-      className="max-w-3xl mx-auto px-4 py-10"
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-    >
-      <Card className="shadow-sm border border-border/60 backdrop-blur-sm">
+    <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
+      {/* Input Section */}
+      <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold text-center">
-            ✍️ AI Blog Post Generator
-          </CardTitle>
+          <CardTitle>AI Content Generator</CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {/* Topic input */}
+          {/* Topic Input */}
           <Input
-            placeholder="Enter your blog topic..."
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
+            placeholder="Enter your blog topic..."
+            disabled={loading}
           />
 
-          {/* Tone selector */}
+          {/* Tone Selector */}
           <Select value={tone} onValueChange={setTone}>
-            <SelectTrigger>
+            <SelectTrigger disabled={loading}>
               <SelectValue placeholder="Select tone" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="informative">Informative</SelectItem>
               <SelectItem value="casual">Casual</SelectItem>
               <SelectItem value="professional">Professional</SelectItem>
-              <SelectItem value="funny">Funny</SelectItem>
-              <SelectItem value="persuasive">Persuasive</SelectItem>
+              <SelectItem value="fun">Fun</SelectItem>
             </SelectContent>
           </Select>
 
-          {/* Generate button */}
-          <Button className="w-full" onClick={handleGenerate} disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              "Generate Content"
-            )}
-          </Button>
-
-          {/* Output text area */}
-          <Textarea
-            placeholder="Your generated blog post will appear here..."
-            value={output}
-            onChange={(e) => setOutput(e.target.value)}
-            rows={10}
-          />
-
-          {/* Action buttons */}
-          {output && (
-            <motion.div
-              className="flex flex-wrap gap-3 justify-between pt-3"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-3">
+            <Button onClick={handleGenerate} disabled={loading}>
+              {loading ? "Generating..." : "Generate"}
+            </Button>
+            <Button
+              onClick={handleSave}
+              variant="secondary"
+              disabled={!content || loading}
             >
-              <Button variant="outline" onClick={handleCopy}>
-                <Copy className="mr-2 h-4 w-4" /> Copy
-              </Button>
-
-              <Button variant="secondary" onClick={handleSave}>
-                <Save className="mr-2 h-4 w-4" /> Save Post
-              </Button>
-
-              <Link href="/saved-posts">
-                <Button variant="default">View Saved</Button>
-              </Link>
-            </motion.div>
-          )}
+              Save
+            </Button>
+            <Button onClick={handleClear} variant="outline" disabled={loading}>
+              Clear
+            </Button>
+          </div>
         </CardContent>
       </Card>
-    </motion.div>
+
+      {/* Output Section */}
+      {content && (
+        <Card>
+          <CardHeader className="flex justify-between items-center">
+            <CardTitle>Generated Content</CardTitle>
+            <CopyButton text={content} />
+          </CardHeader>
+
+          <CardContent>
+            <p className="whitespace-pre-wrap text-sm leading-relaxed">
+              {content}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }

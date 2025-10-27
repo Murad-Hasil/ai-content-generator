@@ -1,64 +1,36 @@
 // src/app/layout.tsx
 // --------------------------------------------------
-// Root layout — wraps the entire app with global styles,
-// metadata, navbar, footer, and theme support.
+// Root Layout
+// Wraps the entire app with global styles, metadata,
+// navigation, footer, theme, and toast support.
 // --------------------------------------------------
 
 import "./globals.css";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { ToastProvider } from "@/components/ui/use-toast";
 
-// Font setup
 const inter = Inter({ subsets: ["latin"] });
 
-// Global SEO + Open Graph metadata
+// --------------------------------------------------
+// Global SEO + Open Graph Metadata
+// --------------------------------------------------
 export const metadata: Metadata = {
+  metadataBase: new URL("https://ai-content-generator-mu-ten.vercel.app"),
   title: "AI Content Generator",
   description: "Instantly generate high-quality blog posts using AI.",
   keywords: ["AI", "blog generator", "content creation", "Next.js", "Gemini"],
   authors: [
     {
       name: "Murad Hasil",
-      url: "https://portfolio-nextjs-woad-gamma.vercel.app/",
+      url: "https://personal-portfolio-nextjs-ebon.vercel.app/",
     },
   ],
-  icons: {
-    icon: [
-      { url: "/icons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/icons/favicon-24x24.png", sizes: "24x24", type: "image/png" },
-      { url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/icons/favicon-64x64.png", sizes: "64x64", type: "image/png" },
-      {
-        url: "/icons/favicon-128x128.png",
-        sizes: "128x128",
-        type: "image/png",
-      },
-      {
-        url: "/icons/favicon-256x256.png",
-        sizes: "256x256",
-        type: "image/png",
-      },
-      {
-        url: "/icons/favicon-512x512.png",
-        sizes: "512x512",
-        type: "image/png",
-      },
-    ],
-    apple: "/icons/favicon-180x180.png",
-    other: [
-      {
-        rel: "manifest",
-        url: "/manifest.json",
-      },
-    ],
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://ai-content-generator-mu-ten.vercel.app/" },
   openGraph: {
     title: "AI Content Generator",
     description: "Create engaging blog content in seconds with AI.",
@@ -82,29 +54,60 @@ export const metadata: Metadata = {
     creator: "@mbmuradhasil",
     images: ["/og-image.png"],
   },
-  metadataBase: new URL("https://ai-content-generator-mu-ten.vercel.app/"),
+  icons: {
+    icon: [
+      { url: "/icons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      {
+        url: "/icons/favicon-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+    ],
+    apple: "/icons/favicon-180x180.png",
+    other: [{ rel: "manifest", url: "/manifest.json" }],
+  },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+// --------------------------------------------------
+// Viewport (Next.js 15 syntax)
+// --------------------------------------------------
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
+// --------------------------------------------------
+// Root Layout Component
+// --------------------------------------------------
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.className} bg-background text-foreground antialiased`}
+        className={`${inter.className} bg-background text-foreground antialiased transition-colors duration-300`}
       >
-        {/* Theme wrapper controls dark/light mode */}
+        {/* Global Providers: Theme + Toast */}
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {/* Navbar (fixed at top) */}
-          <Navbar />
+          <ToastProvider>
+            {/* Navigation */}
+            <Navbar />
 
-          {/* Main content area */}
-          <main className="min-h-screen pt-16 pb-10">{children}</main>
+            {/* Main Content */}
+            <main
+              className="
+                min-h-screen
+                pt-20 pb-12
+                px-4 sm:px-6 lg:px-8
+                space-y-8
+              "
+            >
+              {children}
+            </main>
 
-          {/* Footer (bottom section) */}
-          <Footer />
+            {/* Footer */}
+            <Footer />
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>
