@@ -57,7 +57,7 @@ public/
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/yourusername/ai-content-generator.git
+   git clone https://github.com/Murad-Hasil/ai-content-generator.git
    cd ai-content-generator
    ```
 
@@ -72,7 +72,7 @@ public/
     Create a .env.local file and add:
 
     ```bash
-    NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here
+    GEMINI_API_KEY=your_api_key_here
     ```
 
 4. **Run the development server**
@@ -95,7 +95,7 @@ Once deployed, Lighthouse will recognize the PWA manifest and service worker aut
 
 ## 🧠 Live Demo
 
-👉 [AI Content Generator on Vercel](https://ai-content-generator.vercel.app/)
+👉 [AI Content Generator on Vercel](https://ai-content-generator-mu-ten.vercel.app/)
 
 ---
 
@@ -110,6 +110,6 @@ The app works offline after first load.
 ##  👤 Author
 
 **Murad Hasil**  
-*Portfolio Website:* [Visit My Portfolio](https://portfolio-nextjs-woad-gamma.vercel.app/)
+*Portfolio Website:* [Visit My Portfolio](https://personal-portfolio-nextjs-ebon.vercel.app/)
 
 ---
